@@ -2020,9 +2020,17 @@ func (r *rpcServer) parseOpenChannelReq(in *lnrpc.OpenChannelRequest,
 	var channelType *lnwire.ChannelType
 	switch in.CommitmentType {
 	case lnrpc.CommitmentType_UNKNOWN_COMMITMENT_TYPE:
+		channelType = new(lnwire.ChannelType)
+
+		fv := lnwire.NewRawFeatureVector(
+			lnwire.StaticRemoteKeyRequired,
+		)
+
 		if in.ZeroConf {
-			return nil, fmt.Errorf("use anchors for zero-conf")
+			fv.Set(lnwire.ZeroConfRequired)
 		}
+
+		*channelType = lnwire.ChannelType(*fv)
 
 	case lnrpc.CommitmentType_LEGACY:
 		channelType = new(lnwire.ChannelType)
@@ -5936,7 +5944,7 @@ func (r *rpcServer) GetNodeInfo(ctx context.Context,
 // within the HTLC.
 //
 // TODO(roasbeef): should return a slice of routes in reality
-//  * create separate PR to send based on well formatted route
+//   - create separate PR to send based on well formatted route
 func (r *rpcServer) QueryRoutes(ctx context.Context,
 	in *lnrpc.QueryRoutesRequest) (*lnrpc.QueryRoutesResponse, error) {
 
