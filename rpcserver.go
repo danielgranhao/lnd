@@ -2018,21 +2018,21 @@ func (r *rpcServer) parseOpenChannelReq(in *lnrpc.OpenChannelRequest,
 	}
 
 	var channelType *lnwire.ChannelType
-	switch in.CommitmentType {
-	case lnrpc.CommitmentType_UNKNOWN_COMMITMENT_TYPE:
-		channelType = new(lnwire.ChannelType)
+	/*switch in.CommitmentType {
+	case lnrpc.CommitmentType_UNKNOWN_COMMITMENT_TYPE:*/
+	channelType = new(lnwire.ChannelType)
 
-		fv := lnwire.NewRawFeatureVector(
-			lnwire.StaticRemoteKeyRequired,
-		)
+	fv := lnwire.NewRawFeatureVector(
+		lnwire.StaticRemoteKeyRequired,
+	)
 
-		if in.ZeroConf {
-			fv.Set(lnwire.ZeroConfRequired)
-		}
+	if in.ZeroConf {
+		fv.Set(lnwire.ZeroConfRequired)
+	}
 
-		*channelType = lnwire.ChannelType(*fv)
+	*channelType = lnwire.ChannelType(*fv)
 
-	case lnrpc.CommitmentType_LEGACY:
+	/*case lnrpc.CommitmentType_LEGACY:
 		channelType = new(lnwire.ChannelType)
 		*channelType = lnwire.ChannelType(*lnwire.NewRawFeatureVector())
 
@@ -2080,7 +2080,7 @@ func (r *rpcServer) parseOpenChannelReq(in *lnrpc.OpenChannelRequest,
 	default:
 		return nil, fmt.Errorf("unhandled request channel type %v",
 			in.CommitmentType)
-	}
+	}*/
 
 	// Instruct the server to trigger the necessary events to attempt to
 	// open a new channel. A stream is returned in place, this stream will
