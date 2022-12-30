@@ -2018,7 +2018,20 @@ func (r *rpcServer) parseOpenChannelReq(in *lnrpc.OpenChannelRequest,
 	}
 
 	var channelType *lnwire.ChannelType
-	switch in.CommitmentType {
+
+	channelType = new(lnwire.ChannelType)
+
+	fv := lnwire.NewRawFeatureVector(
+		lnwire.StaticRemoteKeyRequired,
+	)
+
+	if in.ZeroConf {
+		fv.Set(lnwire.ZeroConfRequired)
+	}
+
+	*channelType = lnwire.ChannelType(*fv)
+
+	/*switch in.CommitmentType {
 	case lnrpc.CommitmentType_UNKNOWN_COMMITMENT_TYPE:
 		if in.ZeroConf {
 			return nil, fmt.Errorf("use anchors for zero-conf")
@@ -2072,7 +2085,7 @@ func (r *rpcServer) parseOpenChannelReq(in *lnrpc.OpenChannelRequest,
 	default:
 		return nil, fmt.Errorf("unhandled request channel type %v",
 			in.CommitmentType)
-	}
+	}*/
 
 	// Instruct the server to trigger the necessary events to attempt to
 	// open a new channel. A stream is returned in place, this stream will
@@ -5936,7 +5949,7 @@ func (r *rpcServer) GetNodeInfo(ctx context.Context,
 // within the HTLC.
 //
 // TODO(roasbeef): should return a slice of routes in reality
-//  * create separate PR to send based on well formatted route
+//   - create separate PR to send based on well formatted route
 func (r *rpcServer) QueryRoutes(ctx context.Context,
 	in *lnrpc.QueryRoutesRequest) (*lnrpc.QueryRoutesResponse, error) {
 
